@@ -1,0 +1,3 @@
+import window
+
+window.init()

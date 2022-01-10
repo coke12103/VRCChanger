@@ -12,7 +12,7 @@ proc init*() =
   var win = newWindow("VRCChanger")
 
   win.width = 250.scaleToDpi
-  win.height = 410.scaleToDpi
+  win.height = 420.scaleToDpi
   win.x = bounds.x
   win.y = bounds.y
 

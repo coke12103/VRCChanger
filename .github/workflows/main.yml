@@ -38,7 +38,7 @@ jobs:
       run: mkdir release
 
     - name: Build
-      run: nim c -d:release --app:gui -o:release/VRCChanger.exe src/VRCChanger.nim -Y
+      run: nim c -d:release --app:gui -o:release/VRCChanger.exe src/VRCChanger.nim
 
     - name: Create zip
       uses: vimtor/action-zip@v1

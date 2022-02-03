@@ -1,26 +1,22 @@
 import profile
-import std/osproc, strutils
+import std/osproc, strutils, sequtils
 
 const vrc_path = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\VRChat\\"
 
 proc exec*(profile: Profile) =
-  var options: seq[string]
-
-  options.add("/C");
-  options.add("start");
-  options.add("");
-  options.add((vrc_path & "VRChat.exe"));
+  # そのまま叩くと何故かワールドに入れずにフリーズするのでcmdに叩かせる
+  var options = @["/C", "start", "", (vrc_path & "VRChat.exe")]
 
   if not profile.vr_mode: options.add("--no-vr")
   if profile.profile != 0: options.add(("--profile=" & $(profile.profile)))
 
   if not profile.disable_unused_feature:
     if profile.debug: options.add("--enable-debug-gui")
+
+    options.add("-screen-fullscreen")
     if profile.full_screen:
-      options.add("-screen-fullscreen")
       options.add("1")
     else:
-      options.add("-screen-fullscreen")
       options.add("0")
 
     if not profile.vr_mode: options.add(("--fps=" & $(profile.max_fps)))

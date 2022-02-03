@@ -1,5 +1,5 @@
 import profile
-import std/osproc, strutils, sequtils
+import std/osproc, strutils
 
 const vrc_path = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\VRChat\\"
 

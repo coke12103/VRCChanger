@@ -166,17 +166,17 @@ proc init*() =
       echo repr(getCurrentException())
       return
 
-    var profile = Profile(
-      disable_unused_feature: disable_unused_feature_checkbox.checked,
-      do_not_close: do_not_close_checkbox.checked,
-      vr_mode: mode_checkbox.checked,
-      debug: debug_checkbox.checked,
-      full_screen: full_screen_checkbox.checked,
-      profile: profile_int,
-      max_fps: max_fps_int,
-      screen_width: screen_width_int,
-      screen_height: screen_height_int,
-      other_option: other_option_box.text
+    var profile = new_profile(
+      disable_unused_feature_checkbox.checked,
+      do_not_close_checkbox.checked,
+      mode_checkbox.checked,
+      debug_checkbox.checked,
+      full_screen_checkbox.checked,
+      profile_int,
+      max_fps_int,
+      screen_width_int,
+      screen_height_int,
+      other_option_box.text
     )
 
     write_profile(profile)
@@ -197,17 +197,17 @@ proc init*() =
       echo repr(getCurrentException())
       return
 
-    var profile = Profile(
-      disable_unused_feature: disable_unused_feature_checkbox.checked,
-      do_not_close: do_not_close_checkbox.checked,
-      vr_mode: mode_checkbox.checked,
-      debug: debug_checkbox.checked,
-      full_screen: full_screen_checkbox.checked,
-      profile: profile_int,
-      max_fps: max_fps_int,
-      screen_width: screen_width_int,
-      screen_height: screen_height_int,
-      other_option: other_option_box.text
+    var profile = new_profile(
+      disable_unused_feature_checkbox.checked,
+      do_not_close_checkbox.checked,
+      mode_checkbox.checked,
+      debug_checkbox.checked,
+      full_screen_checkbox.checked,
+      profile_int,
+      max_fps_int,
+      screen_width_int,
+      screen_height_int,
+      other_option_box.text
     )
 
     launcher.exec(profile)

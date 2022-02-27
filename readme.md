@@ -17,6 +17,8 @@ VRCのコマンドラインオプション適当に組み合せていい感じ�
 | `Save` | 現在の設定をデフォルト設定に上書きして保存。次起動したらその設定になる。生成された`profile.json`を削除するとデフォルトに戻る。 |
 | `Launch` | 現在の設定で起動。 |
 
+コマンドラインオプションの意味は[こちら](https://docs.vrchat.com/docs/launch-options)。
+
 ## Build
 ```
 nim c -d:release --app:gui -o:VRCChanger.exe src/VRCChanger.nim

@@ -9,4 +9,4 @@ srcDir        = "src"
 
 # Dependencies
 
-requires "nim >= 1.6.2", "nigui >= 0.2.5"
+requires "nim >= 1.6.6", "nigui >= 0.2.6"

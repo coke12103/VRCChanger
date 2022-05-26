@@ -3,6 +3,8 @@ import std/osproc, strutils
 
 const vrc_path = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\VRChat\\"
 
+proc escape_cmd_str(str: string):string
+
 proc exec*(profile: Profile) =
   # そのまま叩くと何故かワールドに入れずにフリーズするのでcmdに叩かせる
   var options = @["/C", "start", "", (vrc_path & "VRChat.exe")]
@@ -32,6 +34,14 @@ proc exec*(profile: Profile) =
     for o in profile.other_option.split(" "):
       options.add(o)
 
+  if profile.custom_home_world.len > 1:
+    options.add(escape_cmd_str(profile.custom_home_world))
+
   discard startProcess("cmd", vrc_path, options)
 
   if not profile.do_not_close: quit(0)
+
+proc escape_cmd_str(str: string):string =
+  # カスカスカスカスカスカス
+  return str.replace("^", "^^").replace("&", "^&").replace("(", "^(").replace(")", "^)").replace("<", "^<").replace(">", "^>")
+

@@ -10,6 +10,7 @@ type Profile* = ref object
   max_fps*: int
   screen_width*: int
   screen_height*: int
+  custom_home_world*: string
   other_option*: string
 
 proc new_profile*(
@@ -22,6 +23,7 @@ proc new_profile*(
   max_fps = 90,
   screen_width = 1600,
   screen_height = 900,
+  custom_home_world = "",
   other_option = ""
 ): Profile =
   return Profile(
@@ -34,6 +36,7 @@ proc new_profile*(
     max_fps: max_fps,
     screen_width: screen_width,
     screen_height: screen_height,
+    custom_home_world: custom_home_world,
     other_option: other_option
   )
 
@@ -53,6 +56,7 @@ proc load_profile*(path = "./profile.json"): Profile =
       json_file.hasKey("screen_height")
     ): return new_profile()
 
+    var custom_home_world = if json_file.hasKey("custom_home_world"): json_file["custom_home_world"].getStr else: ""
     var other_option = if json_file.hasKey("other_option"): json_file["other_option"].getStr else: ""
 
     result = new_profile(
@@ -65,6 +69,7 @@ proc load_profile*(path = "./profile.json"): Profile =
       json_file["max_fps"].getInt,
       json_file["screen_width"].getInt,
       json_file["screen_height"].getInt,
+      custom_home_world,
       other_option
     )
 
@@ -84,6 +89,7 @@ proc write_profile*(profile: Profile, path = "./profile.json") =
     "max_fps": profile.max_fps,
     "screen_width": profile.screen_width,
     "screen_height": profile.screen_height,
+    "custom_home_world": profile.custom_home_world,
     "other_option": profile.other_option
   }
 

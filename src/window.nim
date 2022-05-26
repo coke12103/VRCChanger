@@ -12,7 +12,7 @@ proc init*() =
   var win = newWindow("VRCChanger")
 
   win.width = 250.scaleToDpi
-  win.height = 420.scaleToDpi
+  win.height = 444.scaleToDpi
   win.x = bounds.x
   win.y = bounds.y
 
@@ -110,6 +110,14 @@ proc init*() =
   screen_h_container.add(screen_h_label)
   screen_h_container.add(screen_h_box)
 
+  var custom_home_world_container = newLayoutContainer(Layout_Horizontal)
+  var custom_home_world_label = newLabel("Custom home world")
+  custom_home_world_label.minWidth = label_width
+  custom_home_world_label.heightMode = HeightMode_Fill
+  var custom_home_world_box = newTextBox()
+  custom_home_world_container.add(custom_home_world_label)
+  custom_home_world_container.add(custom_home_world_box)
+
   var other_option_container = newLayoutContainer(Layout_Horizontal)
   var other_option_label = newLabel("Other option")
   other_option_label.minWidth = label_width
@@ -127,6 +135,7 @@ proc init*() =
   setting_area.add(max_fps_container)
   setting_area.add(screen_w_container)
   setting_area.add(screen_h_container)
+  setting_area.add(custom_home_world_container)
   setting_area.add(other_option_container)
 
   # buttons
@@ -148,6 +157,7 @@ proc init*() =
   max_fps_box.text = $(profile.max_fps)
   screen_w_box.text = $(profile.screen_width)
   screen_h_box.text = $(profile.screen_height)
+  custom_home_world_box.text = profile.custom_home_world
   other_option_box.text = profile.other_option
 
   # events
@@ -176,6 +186,7 @@ proc init*() =
       max_fps_int,
       screen_width_int,
       screen_height_int,
+      custom_home_world_box.text,
       other_option_box.text
     )
 
@@ -207,6 +218,7 @@ proc init*() =
       max_fps_int,
       screen_width_int,
       screen_height_int,
+      custom_home_world_box.text,
       other_option_box.text
     )
 

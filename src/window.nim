@@ -1,8 +1,6 @@
 import nigui, nigui/msgbox, strutils
 import bounds, profile, launcher, custom_widgets
 
-const label_width = 170
-
 proc init*() =
   app.init()
 
@@ -27,6 +25,7 @@ proc init*() =
 
   var setting_area = newLayoutContainer(Layout_Vertical)
   setting_area.padding = 2
+  setting_area.spacing = 1
 
   var button_area = newLayoutContainer(Layout_Horizontal)
   button_area.padding = 2

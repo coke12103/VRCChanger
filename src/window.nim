@@ -1,5 +1,5 @@
 import nigui, nigui/msgbox, strutils
-import bounds, profile, launcher, custom_checkbox
+import bounds, profile, launcher, custom_widgets
 
 const label_width = 170
 
@@ -44,65 +44,24 @@ proc init*() =
   var full_screen_checkbox = newCustomCheckbox("FullScreen*")
   # MEMO: Use Legacy fbt
 
-  var profile_container = newLayoutContainer(Layout_Horizontal)
-  var profile_label = newLabel("Profile")
-  profile_label.minWidth = label_width
-  profile_label.heightMode = HeightMode_Fill
-  var profile_box = newTextBox()
-  profile_container.add(profile_label)
-  profile_container.add(profile_box)
-
-  var max_fps_container = newLayoutContainer(Layout_Horizontal)
-  var max_fps_label = newLabel("Max FPS*(only Desktop)")
-  max_fps_label.minWidth = label_width
-  max_fps_label.heightMode = HeightMode_Fill
-  var max_fps_box = newTextBox()
-  max_fps_container.add(max_fps_label)
-  max_fps_container.add(max_fps_box)
-
-  var screen_w_container = newLayoutContainer(Layout_Horizontal)
-  var screen_w_label = newLabel("Screen Width*")
-  screen_w_label.minWidth = label_width
-  screen_w_label.heightMode = HeightMode_Fill
-  var screen_w_box = newTextBox()
-  screen_w_container.add(screen_w_label)
-  screen_w_container.add(screen_w_box)
-
-  var screen_h_container = newLayoutContainer(Layout_Horizontal)
-  var screen_h_label = newLabel("Screen Height*")
-  screen_h_label.minWidth = label_width
-  screen_h_label.heightMode = HeightMode_Fill
-  var screen_h_box = newTextBox()
-  screen_h_container.add(screen_h_label)
-  screen_h_container.add(screen_h_box)
-
-  var custom_home_world_container = newLayoutContainer(Layout_Horizontal)
-  var custom_home_world_label = newLabel("Custom home world")
-  custom_home_world_label.minWidth = label_width
-  custom_home_world_label.heightMode = HeightMode_Fill
-  var custom_home_world_box = newTextBox()
-  custom_home_world_container.add(custom_home_world_label)
-  custom_home_world_container.add(custom_home_world_box)
-
-  var other_option_container = newLayoutContainer(Layout_Horizontal)
-  var other_option_label = newLabel("Other option")
-  other_option_label.minWidth = label_width
-  other_option_label.heightMode = HeightMode_Fill
-  var other_option_box = newTextBox()
-  other_option_container.add(other_option_label)
-  other_option_container.add(other_option_box)
+  var profile_box = newCustomTextBox("Profile")
+  var max_fps_box = newCustomTextBox("Max FPS*(only Desktop)")
+  var screen_w_box = newCustomTextBox("Screen Width*")
+  var screen_h_box = newCustomTextBox("Screen Height*")
+  var custom_home_world_box = newCustomTextBox("Custom home world")
+  var other_option_box = newCustomTextBox("Other option")
 
   setting_area.add(disable_unused_feature_checkbox.container)
   setting_area.add(do_not_close_checkbox.container)
   setting_area.add(mode_checkbox.container)
   setting_area.add(debug_checkbox.container)
   setting_area.add(full_screen_checkbox.container)
-  setting_area.add(profile_container)
-  setting_area.add(max_fps_container)
-  setting_area.add(screen_w_container)
-  setting_area.add(screen_h_container)
-  setting_area.add(custom_home_world_container)
-  setting_area.add(other_option_container)
+  setting_area.add(profile_box.container)
+  setting_area.add(max_fps_box.container)
+  setting_area.add(screen_w_box.container)
+  setting_area.add(screen_h_box.container)
+  setting_area.add(custom_home_world_box.container)
+  setting_area.add(other_option_box.container)
 
   # buttons
   var save_button = newButton("Save")

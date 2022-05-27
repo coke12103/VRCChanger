@@ -27,3 +27,28 @@ class pub CustomCheckbox:
 
   proc `onToggle=`*(callback: ToggleProc) =
     self.checkbox.onToggle = callback
+
+
+
+class pub CustomTextBox:
+  var
+    container*: LayoutContainer
+    label: Label
+    textbox: TextBox
+
+  proc `new`(label_text: string) =
+    self.container = newLayoutContainer(Layout_Horizontal)
+    self.label = newLabel(label_text)
+    self.textbox = newTextBox()
+
+    self.label.minWidth = label_width
+    self.label.heightMode = HeightMode_Fill
+
+    self.container.add(self.label)
+    self.container.add(self.textbox)
+
+  proc text*: string =
+    return self.textbox.text
+
+  proc `text=`*(text: string) =
+    self.textbox.text = text

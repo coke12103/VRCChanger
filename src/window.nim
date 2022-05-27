@@ -11,13 +11,13 @@ proc init*() =
 
   var win = newWindow("VRCChanger")
 
-  win.width = 250.scaleToDpi
-  win.height = 444.scaleToDpi
+  win.width = bounds.w.scaleToDpi
+  win.height = bounds.h.scaleToDpi
   win.x = bounds.x
   win.y = bounds.y
 
   win.onCloseClick = proc(event: CloseClickEvent) =
-    write_bounds(win.x, win.y)
+    write_bounds(win.x, win.y, win.width, win.height)
     echo "exit"
     win.dispose()
 

@@ -1,5 +1,5 @@
 import nigui, nigui/msgbox, strutils
-import bounds, profile, launcher
+import bounds, profile, launcher, custom_checkbox
 
 const label_width = 170
 
@@ -37,45 +37,11 @@ proc init*() =
   win.add(main_layout)
 
   # settings
-  var disable_unused_feature_container = newLayoutContainer(Layout_Horizontal)
-  var disable_unused_feature_label = newLabel("[*]の付いた項目を無効化")
-  disable_unused_feature_label.minWidth = label_width
-  disable_unused_feature_label.heightMode = HeightMode_Fill
-  var disable_unused_feature_checkbox = newCheckbox()
-  disable_unused_feature_container.add(disable_unused_feature_label)
-  disable_unused_feature_container.add(disable_unused_feature_checkbox)
-
-  var do_not_close_container = newLayoutContainer(Layout_Horizontal)
-  var do_not_close_label = newLabel("VRC起動後も開いたままにする")
-  do_not_close_label.minWidth = label_width
-  do_not_close_label.heightMode = HeightMode_Fill
-  var do_not_close_checkbox = newCheckbox()
-  do_not_close_container.add(do_not_close_label)
-  do_not_close_container.add(do_not_close_checkbox)
-
-  var mode_container = newLayoutContainer(Layout_Horizontal)
-  var mode_label = newLabel("VRMode")
-  mode_label.minWidth = label_width
-  mode_label.heightMode = HeightMode_Fill
-  var mode_checkbox = newCheckbox()
-  mode_container.add(mode_label)
-  mode_container.add(mode_checkbox)
-
-  var debug_container = newLayoutContainer(Layout_Horizontal)
-  var debug_label = newLabel("Debug*")
-  debug_label.minWidth = label_width
-  debug_label.heightMode = HeightMode_Fill
-  var debug_checkbox = newCheckbox()
-  debug_container.add(debug_label)
-  debug_container.add(debug_checkbox)
-
-  var full_screen_container = newLayoutContainer(Layout_Horizontal)
-  var full_screen_label = newLabel("FullScreen*")
-  full_screen_label.minWidth = label_width
-  full_screen_label.heightMode = HeightMode_Fill
-  var full_screen_checkbox = newCheckbox()
-  full_screen_container.add(full_screen_label)
-  full_screen_container.add(full_screen_checkbox)
+  var disable_unused_feature_checkbox = newCustomCheckbox("[*]の付いた項目を無効化")
+  var do_not_close_checkbox = newCustomCheckbox("VRC起動後も開いたままにする")
+  var mode_checkbox = newCustomCheckbox("VRMode")
+  var debug_checkbox = newCustomCheckbox("Debug*")
+  var full_screen_checkbox = newCustomCheckbox("FullScreen*")
   # MEMO: Use Legacy fbt
 
   var profile_container = newLayoutContainer(Layout_Horizontal)
@@ -126,11 +92,11 @@ proc init*() =
   other_option_container.add(other_option_label)
   other_option_container.add(other_option_box)
 
-  setting_area.add(disable_unused_feature_container)
-  setting_area.add(do_not_close_container)
-  setting_area.add(mode_container)
-  setting_area.add(debug_container)
-  setting_area.add(full_screen_container)
+  setting_area.add(disable_unused_feature_checkbox.container)
+  setting_area.add(do_not_close_checkbox.container)
+  setting_area.add(mode_checkbox.container)
+  setting_area.add(debug_checkbox.container)
+  setting_area.add(full_screen_checkbox.container)
   setting_area.add(profile_container)
   setting_area.add(max_fps_container)
   setting_area.add(screen_w_container)

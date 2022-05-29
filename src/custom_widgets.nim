@@ -1,6 +1,6 @@
 import oolib, nigui
 
-const label_width = 170
+const label_width = 180
 
 class pub CustomCheckbox:
   var
@@ -27,8 +27,6 @@ class pub CustomCheckbox:
 
   proc `onToggle=`*(callback: ToggleProc) =
     self.checkbox.onToggle = callback
-
-
 
 class pub CustomTextBox:
   var

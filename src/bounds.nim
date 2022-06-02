@@ -6,7 +6,7 @@ type Bounds* = ref object
   w*: int
   h*: int
 
-const default_w = 250
+const default_w = 262
 const default_h = 444
 
 proc load_bounds*(path = "./bounds.json"): Bounds =

@@ -41,7 +41,7 @@ jobs:
       run: nim c -d:release --app:gui -o:release/VRCChanger.exe src/VRCChanger.nim
 
     - name: Download IUP
-      run: aria2 https://downloads.sourceforge.net/project/iup/3.30/Windows%20Libraries/Dynamic/iup-3.30_Win64_dll16_lib.zip
+      run: aria2c https://downloads.sourceforge.net/project/iup/3.30/Windows%20Libraries/Dynamic/iup-3.30_Win64_dll16_lib.zip
 
     - name: Extracting IUP
       run: Expand-Archive iup-3.30_Win64_dll16_lib.zip

@@ -1,341 +1,396 @@
-import nigui, nigui/msgbox, strutils
+import niup, niup/niupc, strutils
 import bounds, profile, launcher, custom_widgets
 
-proc init*() =
-  app.init()
+proc close_proc(ih: PIhandle):cint {.cdecl.} =
+  var main_window = Dialog_t(niup.GetHandle("main_window"))
+  var rastersize_arr = main_window.rastersize.split("x")
+  var
+    w = rastersize_arr[0].parseInt
+    h = rastersize_arr[1].parseInt
+    x = main_window.x.parseInt
+    y = main_window.y.parseInt
 
-  # init window
+  write_bounds(x, y, w, h)
+  echo "exit"
+
+proc parse_bool(from_str: string):bool =
+  result = (from_str == "YES" or from_str == "ON")
+
+proc parse_bool(from_bool: bool, is_switch = true):string =
+  var ret_val = ""
+
+  if from_bool:
+    ret_val = if is_switch: "ON" else: "YES"
+  else:
+    ret_val = if is_switch: "OFF" else: "NO"
+  result = ret_val
+
+proc save_profile() =
+  var do_not_close_checkbox = Toggle_t(niup.GetHandle("do_not_close_checkbox"))
+  var mode_checkbox = Toggle_t(niup.GetHandle("mode_checkbox"))
+  var debug_enable_checkbox = Toggle_t(niup.GetHandle("debug_enable_checkbox"))
+  var debug_gui_checkbox = Toggle_t(niup.GetHandle("debug_gui_checkbox"))
+  var debug_log_checkbox = Toggle_t(niup.GetHandle("debug_log_checkbox"))
+  var debug_udon_log_checkbox = Toggle_t(niup.GetHandle("debug_udon_log_checkbox"))
+  var debug_ik_log_checkbox = Toggle_t(niup.GetHandle("debug_ik_log_checkbox"))
+  var window_enable_checkbox = Toggle_t(niup.GetHandle("window_enable_checkbox"))
+  var full_screen_checkbox = Toggle_t(niup.GetHandle("full_screen_checkbox"))
+  var ik_enable_checkbox = Toggle_t(niup.GetHandle("ik_enable_checkbox"))
+  var legacy_fbt_checkbox = Toggle_t(niup.GetHandle("legacy_fbt_checkbox"))
+  var disable_shoulder_tracking_checkbox = Toggle_t(niup.GetHandle("disable_shoulder_tracking_checkbox"))
+  var freeze_tracking_on_disconnect_checkbox = Toggle_t(niup.GetHandle("freeze_tracking_on_disconnect_checkbox"))
+  var osc_enable_checkbox = Toggle_t(niup.GetHandle("osc_enable_checkbox"))
+
+  var profile_spin = Text_t(niup.GetHandle("profile_spin"))
+  var max_fps_spin = Text_t(niup.GetHandle("max_fps_spin"))
+  var screen_w_spin = Text_t(niup.GetHandle("screen_w_spin"))
+  var screen_h_spin = Text_t(niup.GetHandle("screen_h_spin"))
+
+  var custom_arm_ratio_spin = Text_t(niup.GetHandle("custom_arm_ratio_spin"))
+  var calibration_range_spin = Text_t(niup.GetHandle("calibration_range_spin"))
+
+  var osc_in_port_textbox = Text_t(niup.GetHandle("osc_in_port_textbox"))
+  var osc_out_ip_textbox = Text_t(niup.GetHandle("osc_out_ip_textbox"))
+  var osc_out_port_textbox = Text_t(niup.GetHandle("osc_out_port_textbox"))
+  var custom_home_world_textbox = Text_t(niup.GetHandle("custom_home_world_textbox"))
+  var other_option_textbox = Text_t(niup.GetHandle("other_option_textbox"))
+
+  var profile_int, max_fps_int, screen_width_int, screen_height_int: int
+  var custom_arm_ratio_float, calibration_range_float: float
+  try:
+    profile_int = profile_spin.spinvalue.parseInt
+    max_fps_int = max_fps_spin.spinvalue.parseInt
+    screen_width_int = screen_w_spin.spinvalue.parseInt
+    screen_height_int = screen_h_spin.spinvalue.parseInt
+    custom_arm_ratio_float = custom_arm_ratio_spin.value.parseFloat
+    calibration_range_float = calibration_range_spin.value.parseFloat
+
+  except ValueError:
+    niup.Message("エラー" ,"値のパースに失敗した")
+    return
+  except:
+    echo repr(getCurrentException())
+    return
+
+  var prof = new_profile(
+    parse_bool(do_not_close_checkbox.value),
+    parse_bool(mode_checkbox.value),
+    profile_int,
+    custom_home_world_textbox.value,
+    other_option_textbox.value,
+    parse_bool(debug_enable_checkbox.value),
+    parse_bool(debug_gui_checkbox.value),
+    parse_bool(debug_log_checkbox.value),
+    parse_bool(debug_udon_log_checkbox.value),
+    parse_bool(debug_ik_log_checkbox.value),
+    parse_bool(window_enable_checkbox.value),
+    parse_bool(full_screen_checkbox.value),
+    max_fps_int,
+    screen_width_int,
+    screen_height_int,
+    parse_bool(ik_enable_checkbox.value),
+    parse_bool(legacy_fbt_checkbox.value),
+    parse_bool(disable_shoulder_tracking_checkbox.value),
+    parse_bool(freeze_tracking_on_disconnect_checkbox.value),
+    custom_arm_ratio_float,
+    calibration_range_float,
+    parse_bool(osc_enable_checkbox.value),
+    osc_in_port_textbox.value,
+    osc_out_ip_textbox.value,
+    osc_out_port_textbox.value
+  )
+
+  write_profile(prof)
+  niup.Message("Message", "Save done!")
+
+
+proc launch_profile() =
+  var do_not_close_checkbox = Toggle_t(niup.GetHandle("do_not_close_checkbox"))
+  var mode_checkbox = Toggle_t(niup.GetHandle("mode_checkbox"))
+  var debug_enable_checkbox = Toggle_t(niup.GetHandle("debug_enable_checkbox"))
+  var debug_gui_checkbox = Toggle_t(niup.GetHandle("debug_gui_checkbox"))
+  var debug_log_checkbox = Toggle_t(niup.GetHandle("debug_log_checkbox"))
+  var debug_udon_log_checkbox = Toggle_t(niup.GetHandle("debug_udon_log_checkbox"))
+  var debug_ik_log_checkbox = Toggle_t(niup.GetHandle("debug_ik_log_checkbox"))
+  var window_enable_checkbox = Toggle_t(niup.GetHandle("window_enable_checkbox"))
+  var full_screen_checkbox = Toggle_t(niup.GetHandle("full_screen_checkbox"))
+  var ik_enable_checkbox = Toggle_t(niup.GetHandle("ik_enable_checkbox"))
+  var legacy_fbt_checkbox = Toggle_t(niup.GetHandle("legacy_fbt_checkbox"))
+  var disable_shoulder_tracking_checkbox = Toggle_t(niup.GetHandle("disable_shoulder_tracking_checkbox"))
+  var freeze_tracking_on_disconnect_checkbox = Toggle_t(niup.GetHandle("freeze_tracking_on_disconnect_checkbox"))
+  var osc_enable_checkbox = Toggle_t(niup.GetHandle("osc_enable_checkbox"))
+
+  var profile_spin = Text_t(niup.GetHandle("profile_spin"))
+  var max_fps_spin = Text_t(niup.GetHandle("max_fps_spin"))
+  var screen_w_spin = Text_t(niup.GetHandle("screen_w_spin"))
+  var screen_h_spin = Text_t(niup.GetHandle("screen_h_spin"))
+
+  var custom_arm_ratio_spin = Text_t(niup.GetHandle("custom_arm_ratio_spin"))
+  var calibration_range_spin = Text_t(niup.GetHandle("calibration_range_spin"))
+
+  var osc_in_port_textbox = Text_t(niup.GetHandle("osc_in_port_textbox"))
+  var osc_out_ip_textbox = Text_t(niup.GetHandle("osc_out_ip_textbox"))
+  var osc_out_port_textbox = Text_t(niup.GetHandle("osc_out_port_textbox"))
+  var custom_home_world_textbox = Text_t(niup.GetHandle("custom_home_world_textbox"))
+  var other_option_textbox = Text_t(niup.GetHandle("other_option_textbox"))
+
+  var profile_int, max_fps_int, screen_width_int, screen_height_int: int
+  var custom_arm_ratio_float, calibration_range_float: float
+  try:
+    profile_int = profile_spin.spinvalue.parseInt
+    max_fps_int = max_fps_spin.spinvalue.parseInt
+    screen_width_int = screen_w_spin.spinvalue.parseInt
+    screen_height_int = screen_h_spin.spinvalue.parseInt
+    custom_arm_ratio_float = custom_arm_ratio_spin.value.parseFloat
+    calibration_range_float = calibration_range_spin.value.parseFloat
+
+  except ValueError:
+    niup.Message("エラー" ,"値のパースに失敗した")
+    return
+  except:
+    echo repr(getCurrentException())
+    return
+
+  var prof = new_profile(
+    parse_bool(do_not_close_checkbox.value),
+    parse_bool(mode_checkbox.value),
+    profile_int,
+    custom_home_world_textbox.value,
+    other_option_textbox.value,
+    parse_bool(debug_enable_checkbox.value),
+    parse_bool(debug_gui_checkbox.value),
+    parse_bool(debug_log_checkbox.value),
+    parse_bool(debug_udon_log_checkbox.value),
+    parse_bool(debug_ik_log_checkbox.value),
+    parse_bool(window_enable_checkbox.value),
+    parse_bool(full_screen_checkbox.value),
+    max_fps_int,
+    screen_width_int,
+    screen_height_int,
+    parse_bool(ik_enable_checkbox.value),
+    parse_bool(legacy_fbt_checkbox.value),
+    parse_bool(disable_shoulder_tracking_checkbox.value),
+    parse_bool(freeze_tracking_on_disconnect_checkbox.value),
+    custom_arm_ratio_float,
+    calibration_range_float,
+    parse_bool(osc_enable_checkbox.value),
+    osc_in_port_textbox.value,
+    osc_out_ip_textbox.value,
+    osc_out_port_textbox.value
+  )
+
+  launcher.exec(prof)
+
+proc init*() =
+  var argc:cint = 0
+  var argv:cstringarray = nil
+  discard niup.Open(argc, addr argv)
+
+  niup.SetGlobal("UTF8MODE", "YES")
+
   var bounds = load_bounds()
 
-  var win = newWindow("VRCChanger")
+  var main_window = niup.Dialog(nil)
+  niup.SetHandle("main_window", main_window)
+  main_window.close_cb = close_proc
+  main_window.title = "VRCChanger"
+  main_window.rastersize(bounds.w, bounds.h)
 
-  win.width = bounds.w.scaleToDpi
-  win.height = bounds.h.scaleToDpi
-  win.x = bounds.x
-  win.y = bounds.y
+  # main layout
+  var main_container = niup.Vbox()
+  main_container.expandchildren = "YES"
+  main_container.ngap(0)
 
-  win.onCloseClick = proc(event: CloseClickEvent) =
-    write_bounds(win.x, win.y, win.width, win.height)
-    echo "exit"
-    win.dispose()
+  var settings_scroll = niup.Scrollbox(nil)
+  settings_scroll.scrollbar = "VERTICAL"
 
-  # layout
+  var settings_container = custom_vbox()
+  settings_container.nmargin(10, 0)
 
-  # Main
-  #   Settings
-  #     do_not_close
-  #     vr_mode
-  #     profile
-  #     custom_home_world
-  #     other_option
-  #
-  #     DebugContainer
-  #       debug
-  #       DebugSubContainer
-  #         debug_gui
-  #         debug_log
-  #         debug_udon_log
-  #         debug_ik_log
-  #
-  #     WindowContainer
-  #       window
-  #       WindowSubContainer
-  #         full_screen
-  #         max_fps
-  #         screen_w
-  #         screen_h
-  #
-  #     IKContainer
-  #       ik
-  #       IKSubContainer
-  #         legacy_fbt
-  #         custom_arm_ratio
-  #         disable_shoulder_tracking
-  #         calibration_range
-  #         freeze_tracking_on_disconnect
-  #
-  #     OSCContainer
-  #       osc
-  #         osc_in_port
-  #         osc_out_ip
-  #         osc_out_port
-  #   Buttons
-  var main_layout = newLayoutContainer(Layout_Vertical)
-  main_layout.padding = 4
+  var separator = niup.Flatseparator()
+  separator.orientation = "HORIZONTAL"
 
-  var setting_area = newLayoutContainer(Layout_Vertical)
-  setting_area.padding = 2
-  setting_area.spacing = 1
+  var buttons_container = niup.Hbox()
+  buttons_container.ngap(4)
+  buttons_container.nmargin(5, 5)
 
-  var button_area = newLayoutContainer(Layout_Horizontal)
-  button_area.padding = 2
+  # Settings
+  var debug_frame_box = newCustomFrameVbox("Debug")
+  var window_frame_box = newCustomFrameVbox("Window")
+  var ik_frame_box = newCustomFrameVbox("IK")
+  var osc_frame_box = newCustomFrameVbox("OSC")
 
-  var debug_container = newLayoutContainer(Layout_Vertical)
-  debug_container.padding = 0
-  debug_container.spacing = 1
+  discard niup.Append(cast[PIhandle](settings_scroll), settings_container)
 
-  var debug_sub_container = newLayoutContainer(Layout_Vertical)
-  debug_sub_container.padding = 0
-  debug_sub_container.spacing = 1
+  discard niup.Append(cast[PIhandle](main_container), settings_scroll)
+  discard niup.Append(cast[PIhandle](main_container), niup.Fill())
+  discard niup.Append(cast[PIhandle](main_container), separator)
+  discard niup.Append(cast[PIhandle](main_container), buttons_container)
 
-  var window_container = newLayoutContainer(Layout_Vertical)
-  window_container.padding = 0
-  window_container.spacing = 1
-
-  var window_sub_container = newLayoutContainer(Layout_Vertical)
-  window_sub_container.padding = 0
-  window_sub_container.spacing = 1
-
-  var ik_container = newLayoutContainer(Layout_Vertical)
-  ik_container.padding = 0
-  ik_container.spacing = 1
-
-  var ik_sub_container = newLayoutContainer(Layout_Vertical)
-  ik_sub_container.padding = 0
-  ik_sub_container.spacing = 1
-
-  var osc_container = newLayoutContainer(Layout_Vertical)
-  osc_container.padding = 0
-  osc_container.spacing = 1
-
-  var osc_sub_container = newLayoutContainer(Layout_Vertical)
-  osc_sub_container.padding = 0
-  osc_sub_container.spacing = 1
-
-  main_layout.add(setting_area)
-  main_layout.add(button_area)
-
-  win.add(main_layout)
+  discard niup.Append(cast[PIhandle](main_window), main_container)
 
   # settings
   #   top
-  var do_not_close_checkbox = newCustomCheckbox("VRC起動後も開いたままにする")
-  var mode_checkbox = newCustomCheckbox("VRMode")
-  var profile_box = newCustomTextBox("Profile")
-  var custom_home_world_box = newCustomTextBox("Custom home world")
-  var other_option_box = newCustomTextBox("Other option")
+  var space = niup.Space()
+  space.rastersize = "x5"
+  space.expand = "HORIZONTAL"
+  var do_not_close_checkbox = niup.Toggle("VRC起動後も開いたままにする")
+  var mode_checkbox = niup.Toggle("VRMode")
+  var profile_spin = newCustomSpinBox("Profile:")
+  var custom_home_world_textbox = newCustomTextBox("Custom home world:")
+  var other_option_textbox = newCustomTextBox("Other options:")
 
-  #   debug
-  var debug_checkbox = newCustomCheckbox("▷ Debug")
-  debug_container.add(debug_checkbox.container)
-  debug_container.add(debug_sub_container)
+  # Debug
+  var debug_gui_checkbox = niup.Toggle("Debug gui")
+  var debug_log_checkbox = niup.Toggle("SDK log levels")
+  var debug_udon_log_checkbox = niup.Toggle("Udon debug logging")
+  var debug_ik_log_checkbox = niup.Toggle("IK debug logging")
 
-  var debug_gui_checkbox = newCustomCheckbox("  Debug gui")
-  debug_sub_container.add(debug_gui_checkbox.container)
+  debug_frame_box.add(debug_gui_checkbox)
+  debug_frame_box.add(debug_log_checkbox)
+  debug_frame_box.add(debug_udon_log_checkbox)
+  debug_frame_box.add(debug_ik_log_checkbox)
 
-  var debug_log_checkbox = newCustomCheckbox("  SDK log levels")
-  debug_sub_container.add(debug_log_checkbox.container)
+  # Window
+  var full_screen_checkbox = niup.Toggle("Full screen")
+  var max_fps_spin = newCustomSpinBox("Max FPS(Desktop only):")
+  var screen_w_spin = newCustomSpinBox("Screen width:")
+  var screen_h_spin = newCustomSpinBox("Screen height:")
 
-  var debug_udon_log_checkbox = newCustomCheckbox("  Udon debug logging")
-  debug_sub_container.add(debug_udon_log_checkbox.container)
+  # 流石に上限FPSでこれ超えることないっしょ
+  max_fps_spin.max = 10000
 
-  var debug_ik_log_checkbox = newCustomCheckbox("  IK debug logging")
-  debug_sub_container.add(debug_ik_log_checkbox.container)
+  screen_w_spin.min = 10
+  screen_h_spin.min = 10
+  screen_w_spin.max = 4096000
+  screen_h_spin.max = 4096000
+  screen_w_spin.inc = 10
+  screen_h_spin.inc = 10
 
-  #   window
-  var window_checkbox = newCustomCheckbox("▷ Window")
-  window_container.add(window_checkbox.container)
-  window_container.add(window_sub_container)
+  window_frame_box.add(full_screen_checkbox)
+  window_frame_box.add(max_fps_spin.container)
+  window_frame_box.add(screen_w_spin.container)
+  window_frame_box.add(screen_h_spin.container)
 
-  var full_screen_checkbox = newCustomCheckbox("  FullScreen")
-  window_sub_container.add(full_screen_checkbox.container)
+  # IK
+  var legacy_fbt_checkbox = niup.Toggle("Legacy FBT calibrate")
+  var custom_arm_ratio_spin = newCustomFloatSpinBox("Custom arm ratio:")
+  var disable_shoulder_tracking_checkbox = niup.Toggle("Disable shoulder tracking")
+  var calibration_range_spin = newCustomFloatSpinBox("Calibration range:")
+  var freeze_tracking_on_disconnect_checkbox = niup.Toggle("Freeze tracking on disconnect")
 
-  var max_fps_box = newCustomTextBox("  Max FPS(only Desktop)")
-  window_sub_container.add(max_fps_box.container)
+  custom_arm_ratio_spin.max = 1
+  custom_arm_ratio_spin.inc = 0.0001
 
-  var screen_w_box = newCustomTextBox("  Screen Width")
-  window_sub_container.add(screen_w_box.container)
+  calibration_range_spin.max = 10
+  calibration_range_spin.inc = 0.01
 
-  var screen_h_box = newCustomTextBox("  Screen Height")
-  window_sub_container.add(screen_h_box.container)
+  ik_frame_box.add(legacy_fbt_checkbox)
+  ik_frame_box.add(custom_arm_ratio_spin.container)
+  ik_frame_box.add(disable_shoulder_tracking_checkbox)
+  ik_frame_box.add(calibration_range_spin.container)
+  ik_frame_box.add(freeze_tracking_on_disconnect_checkbox)
 
-  #   ik
-  var ik_checkbox = newCustomCheckbox("▷ IK")
-  ik_container.add(ik_checkbox.container)
-  ik_container.add(ik_sub_container)
+  var osc_in_port_textbox = newCustomTextBox("in Port:")
+  var osc_out_ip_textbox = newCustomTextBox("out IP:")
+  var osc_out_port_textbox = newCustomTextBox("out Port:")
 
-  var legacy_fbt_checkbox = newCustomCheckbox("  Legacy FBT calibrate")
-  ik_sub_container.add(legacy_fbt_checkbox.container)
+  osc_frame_box.add(osc_in_port_textbox.container)
+  osc_frame_box.add(osc_out_ip_textbox.container)
+  osc_frame_box.add(osc_out_port_textbox.container)
 
-  var custom_arm_ratio_box = newCustomTextBox("  Custom arm ratio")
-  ik_sub_container.add(custom_arm_ratio_box.container)
+  discard niup.Append(cast[PIhandle](settings_container), space)
+  discard niup.Append(cast[PIhandle](settings_container), do_not_close_checkbox)
+  discard niup.Append(cast[PIhandle](settings_container), mode_checkbox)
+  discard niup.Append(cast[PIhandle](settings_container), profile_spin.container)
+  discard niup.Append(cast[PIhandle](settings_container), custom_home_world_textbox.container)
+  discard niup.Append(cast[PIhandle](settings_container), other_option_textbox.container)
+  discard niup.Append(cast[PIhandle](settings_container), debug_frame_box.frame)
+  discard niup.Append(cast[PIhandle](settings_container), window_frame_box.frame)
+  discard niup.Append(cast[PIhandle](settings_container), ik_frame_box.frame)
+  discard niup.Append(cast[PIhandle](settings_container), osc_frame_box.frame)
 
-  var disable_shoulder_tracking_checkbox = newCustomCheckbox("  Disable shoulder tracking")
-  ik_sub_container.add(disable_shoulder_tracking_checkbox.container)
-
-  var calibration_range_box = newCustomTextBox("  Calibration range")
-  ik_sub_container.add(calibration_range_box.container)
-
-  var freeze_tracking_on_disconnect_checkbox = newCustomCheckbox("  Freeze tracking on disconnect")
-  ik_sub_container.add(freeze_tracking_on_disconnect_checkbox.container)
-
-  var osc_checkbox = newCustomCheckbox("▷ OSC")
-  osc_container.add(osc_checkbox.container)
-  osc_container.add(osc_sub_container)
-
-  var osc_in_port_box = newCustomTextBox("  in Port")
-  osc_sub_container.add(osc_in_port_box.container)
-
-  var osc_out_ip_box = newCustomTextBox("  out IP")
-  osc_sub_container.add(osc_out_ip_box.container)
-
-  var osc_out_port_box = newCustomTextBox("  out Port")
-  osc_sub_container.add(osc_out_port_box.container)
-
-  setting_area.add(do_not_close_checkbox.container)
-  setting_area.add(mode_checkbox.container)
-  setting_area.add(profile_box.container)
-  setting_area.add(custom_home_world_box.container)
-  setting_area.add(other_option_box.container)
-  setting_area.add(debug_container)
-  setting_area.add(window_container)
-  setting_area.add(ik_container)
-  setting_area.add(osc_container)
+  niup.SetHandle("do_not_close_checkbox", do_not_close_checkbox)
+  niup.SetHandle("mode_checkbox", mode_checkbox)
+  niup.SetHandle("profile_spin", profile_spin.spin)
+  niup.SetHandle("custom_home_world_textbox", custom_home_world_textbox.textbox)
+  niup.SetHandle("other_option_textbox", other_option_textbox.textbox)
+  niup.SetHandle("debug_enable_checkbox", debug_frame_box.toggle)
+  niup.SetHandle("debug_gui_checkbox", debug_gui_checkbox)
+  niup.SetHandle("debug_log_checkbox", debug_log_checkbox)
+  niup.SetHandle("debug_udon_log_checkbox", debug_udon_log_checkbox)
+  niup.SetHandle("debug_ik_log_checkbox", debug_ik_log_checkbox)
+  niup.SetHandle("window_enable_checkbox", window_frame_box.toggle)
+  niup.SetHandle("full_screen_checkbox", full_screen_checkbox)
+  niup.SetHandle("max_fps_spin", max_fps_spin.spin)
+  niup.SetHandle("screen_w_spin", screen_w_spin.spin)
+  niup.SetHandle("screen_h_spin", screen_h_spin.spin)
+  niup.SetHandle("ik_enable_checkbox", ik_frame_box.toggle)
+  niup.SetHandle("legacy_fbt_checkbox", legacy_fbt_checkbox)
+  niup.SetHandle("custom_arm_ratio_spin", custom_arm_ratio_spin.spin)
+  niup.SetHandle("disable_shoulder_tracking_checkbox", disable_shoulder_tracking_checkbox)
+  niup.SetHandle("calibration_range_spin", calibration_range_spin.spin)
+  niup.SetHandle("freeze_tracking_on_disconnect_checkbox", freeze_tracking_on_disconnect_checkbox)
+  niup.SetHandle("osc_enable_checkbox", osc_frame_box.toggle)
+  niup.SetHandle("osc_in_port_textbox", osc_in_port_textbox.textbox)
+  niup.SetHandle("osc_out_ip_textbox", osc_out_ip_textbox.textbox)
+  niup.SetHandle("osc_out_port_textbox", osc_out_port_textbox.textbox)
 
   # buttons
-  var save_button = newButton("Save")
-  var launch_button = newButton("Launch")
+  var save_button = niup.Button("Save")
+  var launch_button = niup.Button("Launch")
 
-  button_area.add(save_button)
-  button_area.add(launch_button)
+  save_button.padding = "5x2"
+  launch_button.padding = "5x2"
 
-  debug_checkbox.onToggle = proc(event: ToggleEvent) = debug_sub_container.visible = debug_checkbox.checked
-  window_checkbox.onToggle = proc(event: ToggleEvent) = window_sub_container.visible = window_checkbox.checked
-  ik_checkbox.onToggle = proc(event: ToggleEvent) = ik_sub_container.visible = ik_checkbox.checked
-  osc_checkbox.onToggle = proc(event: ToggleEvent) = osc_sub_container.visible = osc_checkbox.checked
+  discard niup.Append(cast[PIhandle](buttons_container), save_button)
+  discard niup.Append(cast[PIhandle](buttons_container), launch_button)
 
-  # profile
   var profile = load_profile()
+  do_not_close_checkbox.value = parse_bool(profile.do_not_close)
+  mode_checkbox.value = parse_bool(profile.vr_mode)
+  profile_spin.value = profile.profile
+  custom_home_world_textbox.value = profile.custom_home_world
+  other_option_textbox.value = profile.other_option
+  debug_frame_box.enable = profile.debug
+  debug_gui_checkbox.value = parse_bool(profile.debug_gui)
+  debug_log_checkbox.value = parse_bool(profile.debug_log)
+  debug_udon_log_checkbox.value = parse_bool(profile.debug_udon_log)
+  debug_ik_log_checkbox.value = parse_bool(profile.debug_ik_log)
+  window_frame_box.enable = profile.window
+  full_screen_checkbox.value = parse_bool(profile.full_screen)
+  max_fps_spin.value = profile.max_fps
+  screen_w_spin.value = profile.screen_width
+  screen_h_spin.value = profile.screen_height
+  ik_frame_box.enable = profile.ik
+  legacy_fbt_checkbox.value = parse_bool(profile.legacy_fbt)
+  custom_arm_ratio_spin.value = profile.custom_arm_ratio
+  disable_shoulder_tracking_checkbox.value = parse_bool(profile.disable_shoulder_tracking)
+  freeze_tracking_on_disconnect_checkbox.value = parse_bool(profile.freeze_tracking_on_disconnect)
+  calibration_range_spin.value = profile.calibration_range
+  osc_frame_box.enable = profile.osc
+  osc_in_port_textbox.value = profile.osc_in_port
+  osc_out_ip_textbox.value = profile.osc_out_ip
+  osc_out_port_textbox.value = profile.osc_out_port
 
-  do_not_close_checkbox.checked = profile.do_not_close
-  mode_checkbox.checked = profile.vr_mode
-  profile_box.text = $(profile.profile)
-  custom_home_world_box.text = profile.custom_home_world
-  other_option_box.text = profile.other_option
-  debug_checkbox.checked = profile.debug
-  debug_gui_checkbox.checked = profile.debug_gui
-  debug_log_checkbox.checked = profile.debug_log
-  debug_udon_log_checkbox.checked = profile.debug_udon_log
-  debug_ik_log_checkbox.checked = profile.debug_ik_log
-  window_checkbox.checked = profile.window
-  full_screen_checkbox.checked = profile.full_screen
-  max_fps_box.text = $(profile.max_fps)
-  screen_w_box.text = $(profile.screen_width)
-  screen_h_box.text = $(profile.screen_height)
-  ik_checkbox.checked = profile.ik
-  legacy_fbt_checkbox.checked = profile.legacy_fbt
-  custom_arm_ratio_box.text = $(profile.custom_arm_ratio)
-  disable_shoulder_tracking_checkbox.checked = profile.disable_shoulder_tracking
-  freeze_tracking_on_disconnect_checkbox.checked = profile.freeze_tracking_on_disconnect
-  calibration_range_box.text = $(profile.calibration_range)
-  osc_checkbox.checked = profile.osc
-  osc_in_port_box.text = profile.osc_in_port
-  osc_out_ip_box.text = profile.osc_out_ip
-  osc_out_port_box.text = profile.osc_out_port
+  debug_frame_box.reload()
+  window_frame_box.reload()
+  ik_frame_box.reload()
+  osc_frame_box.reload()
 
-  debug_sub_container.visible = debug_checkbox.checked
-  window_sub_container.visible = window_checkbox.checked
-  ik_sub_container.visible = ik_checkbox.checked
-  osc_sub_container.visible = osc_checkbox.checked
+  proc save_button_callback(ih: PIhandle):cint {.cdecl.} =
+    save_profile()
 
-  # events
-  save_button.onClick = proc(event: ClickEvent) =
-    var profile_int, max_fps_int, screen_width_int, screen_height_int: int
-    var custom_arm_ratio_float, calibration_range_float: float
-    try:
-      profile_int = profile_box.text.parseInt
-      max_fps_int = max_fps_box.text.parseInt
-      screen_width_int = screen_w_box.text.parseInt
-      screen_height_int = screen_h_box.text.parseInt
-      custom_arm_ratio_float = custom_arm_ratio_box.text.parseFloat
-      calibration_range_float = calibration_range_box.text.parseFloat
-    except ValueError:
-      # 多分2バイト文字だから長さ正しく取れてない
-      win.msgBox("テキストボックスにテキストを入れないで              ")
-      return
-    except:
-      echo repr(getCurrentException())
-      return
+  save_button.action = save_button_callback
 
-    var profile = new_profile(
-      do_not_close_checkbox.checked,
-      mode_checkbox.checked,
-      profile_int,
-      custom_home_world_box.text,
-      other_option_box.text,
-      debug_checkbox.checked,
-      debug_gui_checkbox.checked,
-      debug_log_checkbox.checked,
-      debug_udon_log_checkbox.checked,
-      debug_ik_log_checkbox.checked,
-      window_checkbox.checked,
-      full_screen_checkbox.checked,
-      max_fps_int,
-      screen_width_int,
-      screen_height_int,
-      ik_checkbox.checked,
-      legacy_fbt_checkbox.checked,
-      disable_shoulder_tracking_checkbox.checked,
-      freeze_tracking_on_disconnect_checkbox.checked,
-      custom_arm_ratio_float,
-      calibration_range_float,
-      osc_checkbox.checked,
-      osc_in_port_box.text,
-      osc_out_ip_box.text,
-      osc_out_port_box.text
-    )
+  proc launch_button_callback(ih: PIhandle):cint {.cdecl.} =
+    launch_profile()
 
-    write_profile(profile)
-    win.msgBox("Save done!")
+  launch_button.action = launch_button_callback
 
-  launch_button.onClick = proc(event: ClickEvent) =
-    var profile_int, max_fps_int, screen_width_int, screen_height_int: int
-    var custom_arm_ratio_float, calibration_range_float: float
-    try:
-      profile_int = profile_box.text.parseInt
-      max_fps_int = max_fps_box.text.parseInt
-      screen_width_int = screen_w_box.text.parseInt
-      screen_height_int = screen_h_box.text.parseInt
-      custom_arm_ratio_float = custom_arm_ratio_box.text.parseFloat
-      calibration_range_float = calibration_range_box.text.parseFloat
-    except ValueError:
-      # 多分2バイト文字だから長さ正しく取れてない
-      win.msgBox("テキストボックスにテキストを入れないで              ")
-      return
-    except:
-      echo repr(getCurrentException())
-      return
+  discard niup.ShowXY(main_window, bounds.x.cint, bounds.y.cint)
+  niupc.SetAttribute(cast[PIhandle](main_window), "USERSIZE", nil)
 
-    var profile = new_profile(
-      do_not_close_checkbox.checked,
-      mode_checkbox.checked,
-      profile_int,
-      custom_home_world_box.text,
-      other_option_box.text,
-      debug_checkbox.checked,
-      debug_gui_checkbox.checked,
-      debug_log_checkbox.checked,
-      debug_udon_log_checkbox.checked,
-      debug_ik_log_checkbox.checked,
-      window_checkbox.checked,
-      full_screen_checkbox.checked,
-      max_fps_int,
-      screen_width_int,
-      screen_height_int,
-      ik_checkbox.checked,
-      legacy_fbt_checkbox.checked,
-      disable_shoulder_tracking_checkbox.checked,
-      freeze_tracking_on_disconnect_checkbox.checked,
-      custom_arm_ratio_float,
-      calibration_range_float,
-      osc_checkbox.checked,
-      osc_in_port_box.text,
-      osc_out_ip_box.text,
-      osc_out_port_box.text
-    )
+  discard niup.MainLoop()
 
-    launcher.exec(profile)
-
-  win.show()
-  app.run()
-
+  niup.Close()

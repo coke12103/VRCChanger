@@ -10,7 +10,7 @@ VRCのコマンドラインオプション適当に組み合せていい感じ�
 | `Custom home world` | 公式サイトの`LAUNCH WORLD`のボタンに付いてるリンクを突っ込むと起動時にそのインスタンスから起動する。 |
 | `Other options` | GUIにないオプションがある場合はスペース区切りでここに書けばOK。(midiなど) |
 | `Debug/Enable` | デバッグ関連の設定を有効化。 |
-| `Debug/Debug gui` | デバッグ用のGUIを有効化。(`--enable-debug-gui `を指定して起動。) |
+| `Debug/Debug gui` | デバッグ用のGUIを有効化。(`--enable-debug-gui`を指定して起動。) |
 | `Debug/SDK log levels` | 追加ログの有効化。(`--enable-sdk-log-levels`を指定して起動。) |
 | `Debug/Udon debug logging` | Udonのheapとstack dumpを有効化。(`--enable-udon-debug-logging`を指定して起動。) |
 | `Debug/IK debug logging` | IKに関する追加のログを有効化。(`--enable-ik-debug-logging`を指定して起動。) |
@@ -25,6 +25,10 @@ VRCのコマンドラインオプション適当に組み合せていい感じ�
 | `IK/Disable shoulder tracking` | 一部のIMU方式の腕トラッカーで発生する問題を回避する。(`--disable-shoulder-tracking`を指定して起動。) |
 | `IK/Calibration range` | キャリブレーション時のバインディングポイントからの検索範囲を指定。(`--calibration-range`の値を指定。)メートル単位。デフォルトは0.6 |
 | `IK/Freeze tracking on disconnect` | トラッカーが切断された時にその場でフリーズするように設定。(`--freeze-tracking-on-disconnect`を指定して起動。) |
+| `OSC/Enable` | OSC関連の設定を有効化。 |
+| `OSC/in Port` | デフォルトは9000 |
+| `OSC/out IP` | デフォルトは127.0.0.1 |
+| `OSC/out Port` | デフォルトは9001 |
 | `Save` | 現在の設定をデフォルト設定に上書きして保存。次起動したらその設定になる。生成された`profile.json`を削除するとデフォルトに戻る。 |
 | `Launch` | 現在の設定で起動。 |
 
